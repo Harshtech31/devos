@@ -6,7 +6,7 @@
 
 **Status:** Draft
 
-**Category:** Foundation
+**Category:** Overview
 
 **Depends On:** 005 – Guiding Principles
 
