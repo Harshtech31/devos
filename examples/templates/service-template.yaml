@@ -1,0 +1,42 @@
+# Illustrative Template manifest following the authoring rules of
+# DEVOS-SPEC-053 and the contract of DEVOS-SPEC-027.
+# Templates are pure data: no executable steps, no environment reads,
+# no secret values, deterministic output for identical inputs.
+id: service-template
+name: Example Service Template
+version: 1.0.0
+compatibility: ">=0.1 <1.0"
+description: Creates a Workspace for a small HTTP service with development and staging profiles.
+provenance:
+  origin: examples/templates/service-template.yaml
+parameters:
+  - name: serviceName
+    type: string
+    required: true
+    description: Name of the managed project.
+    constraints:
+      pattern: "^[a-z][a-z0-9-]*$"
+      minLength: 3
+      maxLength: 32
+  - name: logLevel
+    type: enum
+    required: false
+    default: info
+    description: Initial log level for the development profile.
+    constraints:
+      values: [debug, info, warn]
+  - name: enableAiAssistant
+    type: boolean
+    required: false
+    default: true
+    description: Whether to declare an AI assistant provider with a Secret reference.
+structure:
+  project:
+    name: "${serviceName}"
+  profiles:
+    - name: development
+      environment:
+        variables:
+          LOG_LEVEL: "${logLevel}"
+examples:
+  - serviceName: example-service

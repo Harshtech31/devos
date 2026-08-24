@@ -1,0 +1,123 @@
+{
+  "apiVersion": "devos.dev/v0",
+  "kind": "Workspace",
+  "metadata": {
+    "id": "ws-example-service",
+    "name": "Example Service Workspace",
+    "schemaVersion": "0.1"
+  },
+  "project": {
+    "id": "proj-example-service",
+    "name": "example-service",
+    "description": "A small HTTP service used to illustrate DevOS workspaces.",
+    "version": "0.1.0"
+  },
+  "profiles": [
+    {
+      "id": "prof-development",
+      "name": "development",
+      "description": "Local development profile.",
+      "isDefault": true,
+      "displayOrder": 1,
+      "environment": {
+        "variables": {
+          "LOG_LEVEL": "debug",
+          "DATABASE_URL_SECRET_REF": "db-password"
+        },
+        "featureFlags": {
+          "newCheckoutFlow": false
+        },
+        "runtimeConfig": {
+          "requestTimeoutSeconds": 30
+        }
+      }
+    },
+    {
+      "id": "prof-staging",
+      "name": "staging",
+      "description": "Pre-production verification profile.",
+      "displayOrder": 2,
+      "environment": {
+        "variables": {
+          "LOG_LEVEL": "info"
+        },
+        "runtimeConfig": {
+          "requestTimeoutSeconds": 10
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "con-local-database",
+      "name": "local-database",
+      "targetType": "database",
+      "endpoint": { "host": "localhost", "port": 5432 },
+      "credentialSecretRefs": ["db-password"],
+      "options": { "sslMode": "prefer" },
+      "healthCheckHints": { "intervalSeconds": 60 }
+    }
+  ],
+  "providers": [
+    {
+      "id": "prov-ai-assistant",
+      "name": "ai-assistant",
+      "capability": "ai",
+      "configuration": { "routingPriority": "local-first" },
+      "operations": ["generate", "summarize", "embed"],
+      "credentialSecretRef": "ai-provider-key"
+    }
+  ],
+  "plugins": [
+    {
+      "id": "plugin-git-integration",
+      "name": "git-integration",
+      "version": "1.2.0",
+      "compatibility": ">=0.1 <1.0",
+      "permissions": [
+        "events:subscribe:devos.workspace.*",
+        "commands:contribute"
+      ],
+      "contributions": {
+        "commands": [
+          { "id": "sync-branches", "description": "Synchronize workspace branches with the remote." }
+        ]
+      }
+    }
+  ],
+  "templates": [
+    {
+      "id": "tmpl-service-template",
+      "name": "Service Template",
+      "version": "1.0.0",
+      "compatibility": ">=0.1 <1.0",
+      "structure": {}
+    }
+  ],
+  "secrets": [
+    {
+      "id": "ai-provider-key",
+      "name": "AI Provider Key",
+      "description": "Credential for the AI capability provider."
+    },
+    {
+      "id": "db-password",
+      "name": "Database Password",
+      "rotationPolicyHint": "rotate-quarterly"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "wf-verify-pipeline",
+      "name": "verify-pipeline",
+      "tasks": [
+        { "id": "task-lint", "name": "lint", "description": "Static analysis over the project sources." },
+        { "id": "task-test", "name": "test", "description": "Execute the unit test suite." }
+      ]
+    }
+  ],
+  "documentation": [
+    { "path": "docs/architecture.md" },
+    { "path": "docs/onboarding.md" }
+  ]
+}

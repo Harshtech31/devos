@@ -1,0 +1,22 @@
+# Illustrative Plugin manifest following DEVOS-SPEC-026 and the author
+# model of DEVOS-SPEC-051. Everything static lives in this manifest;
+# everything dynamic happens inside lifecycle callbacks; anything
+# undeclared does not exist at runtime.
+id: example-greeter
+name: Example Greeter
+version: 1.0.0
+compatibility: ">=0.1 <1.0"
+permissions:
+  - events:subscribe:devos.connection.*
+  - commands:contribute
+contributions:
+  commands:
+    - id: greet
+      description: Print a friendly greeting attributed to this plugin.
+entry:
+  descriptor:
+    language: neutral-pseudocode
+    module: greeter
+    callbacks:
+      onEnable: register-subscriptions-and-command
+      onDisable: release-all

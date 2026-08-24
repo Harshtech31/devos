@@ -1,0 +1,85 @@
+# Illustrative Workspace Manifest for the Example Service.
+# This file demonstrates shape and vocabulary under the RECOMMENDED
+# human-readable encoding of DEVOS-SPEC-029; it is not normative format
+# definition. The machine-validated twin of this manifest is
+# example-workspace.json, which validates against schemas/manifest.schema.json.
+apiVersion: devos.dev/v0
+kind: Workspace
+metadata:
+  id: ws-example-service
+  name: Example Service Workspace
+  schemaVersion: "0.1"
+project:
+  id: proj-example-service
+  name: example-service
+  description: A small HTTP service used to illustrate DevOS workspaces.
+  version: 0.1.0
+profiles:
+  - id: prof-development
+    name: development
+    description: Local development profile.
+    isDefault: true
+    displayOrder: 1
+    environment:
+      variables:
+        LOG_LEVEL: debug
+      featureFlags:
+        newCheckoutFlow: false
+      runtimeConfig:
+        requestTimeoutSeconds: 30
+  - id: prof-staging
+    name: staging
+    description: Pre-production verification profile.
+    displayOrder: 2
+    environment:
+      variables:
+        LOG_LEVEL: info
+connections:
+  - id: con-local-database
+    name: local-database
+    targetType: database
+    endpoint:
+      host: localhost
+      port: 5432
+    credentialSecretRefs:
+      - db-password
+providers:
+  - id: prov-ai-assistant
+    name: ai-assistant
+    capability: ai
+    configuration:
+      routingPriority: local-first
+    operations:
+      - generate
+      - summarize
+      - embed
+    credentialSecretRef: ai-provider-key
+plugins:
+  - id: plugin-git-integration
+    name: git-integration
+    version: 1.2.0
+    compatibility: ">=0.1 <1.0"
+    permissions:
+      - events:subscribe:devos.workspace.*
+      - commands:contribute
+templates:
+  - id: tmpl-service-template
+    name: Service Template
+    version: 1.0.0
+    compatibility: ">=0.1 <1.0"
+secrets:
+  # References and metadata ONLY per DEVOS-SPEC-028. No values anywhere.
+  - id: ai-provider-key
+    name: AI Provider Key
+  - id: db-password
+    name: Database Password
+workflows:
+  - id: wf-verify-pipeline
+    name: verify-pipeline
+    tasks:
+      - id: task-lint
+        name: lint
+      - id: task-test
+        name: test
+documentation:
+  - path: docs/architecture.md
