@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devos.dev/schemas/v0/plugin.schema.json",
+  "title": "Plugin",
+  "description": "Canonical Plugin contract per DEVOS-SPEC-026. Plugins extend DevOS through declared public interfaces only; undeclared capabilities do not exist at runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "version", "compatibility"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable Plugin identifier unique inside the owning Workspace."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable Plugin name."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$",
+      "description": "Plugin version within its compatibility range, per DEVOS-SPEC-059."
+    },
+    "compatibility": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Supported platform version range; absent or unparseable ranges are invalid and rejected per DEVOS-SPEC-059."
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*(:[a-z0-9*._-]+)*$",
+        "description": "Scoped capability string following the grammar '<domain>:<capability>' with optional ':<scope-pattern>'."
+      },
+      "uniqueItems": true,
+      "description": "Requested capabilities evaluated deny-by-default by the Security Engine per DEVOS-SPEC-036."
+    },
+    "contributions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "commands": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contributionEntry" }
+        },
+        "templates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contributionEntry" }
+        },
+        "providers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contributionEntry" }
+        },
+        "hooks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/hookSubscription" }
+        },
+        "topics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/topicSubscription" }
+        },
+        "dashboardSurfaces": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contributionEntry" }
+        }
+      },
+      "description": "Declared contribution points taking effect only while the Plugin is Enabled, withdrawn atomically on disable or delete per DEVOS-SPEC-032."
+    },
+    "entry": {
+      "type": "object",
+      "required": ["descriptor"],
+      "properties": {
+        "descriptor": {
+          "type": ["string", "object"],
+          "description": "Binding-defined pointer to the enablement logic."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Entry descriptor locating the plugin enablement logic."
+    }
+  },
+  "$defs": {
+    "contributionEntry": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "hookSubscription": {
+      "type": "object",
+      "required": ["hookPoint"],
+      "properties": {
+        "hookPoint": {
+          "type": "string",
+          "pattern": "^devos\\.hooks\\.[a-z0-9.-]+$",
+          "description": "Named hook point per DEVOS-SPEC-056; unknown interfaces cause rejection at enable time."
+        }
+      },
+      "additionalProperties": false
+    },
+    "topicSubscription": {
+      "type": "object",
+      "required": ["topicPattern"],
+      "properties": {
+        "topicPattern": {
+          "type": "string",
+          "pattern": "^devos\\.[a-z0-9.-]+(\\.[a-z0-9.-]+)*(\\.\\*)?$",
+          "description": "Topic pattern over the lowercase dotted convention of DEVOS-SPEC-037."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

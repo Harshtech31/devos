@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devos.dev/schemas/v0/settings.schema.json",
+  "title": "Settings",
+  "description": "Canonical Settings contract per DEVOS-SPEC-047. Settings are declarative user preferences in Global/User or Workspace scope. Telemetry defaults to false at every scope; this default is normative.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "description": "Settings schema contract version per DEVOS-SPEC-059."
+    },
+    "appearance": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "number", "boolean"] },
+      "description": "Interface presentation only, such as ui.theme."
+    },
+    "editors": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "number", "boolean"] },
+      "description": "Bridges to external editors, such as editors.default. Editor names remain illustrative examples of providers."
+    },
+    "ai": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "number", "boolean"] },
+      "description": "AI routing defaults such as ai.priority and ai.budget feeding DEVOS-SPEC-039 policies."
+    },
+    "updates": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "number", "boolean"] },
+      "properties": {
+        "channel": {
+          "type": "string",
+          "description": "Channel consumed by the Update System per DEVOS-SPEC-048."
+        }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "MUST default to false at every scope; normative privacy stance of DEVOS-SPEC-047."
+        }
+      }
+    },
+    "log": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "number", "boolean"] },
+      "description": "Per-component logging level defaults feeding DEVOS-SPEC-049."
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "number", "boolean"] },
+      "properties": {
+        "scheduled": {
+          "type": ["string", "number"],
+          "description": "Opt-in scheduled interval feeding DEVOS-SPEC-046. Absent means no scheduled checks run."
+        }
+      }
+    }
+  },
+  "$comment": "New categories MUST enter through the canonical categories table of DEVOS-SPEC-047 and this schema before any consumer reads their keys."
+}

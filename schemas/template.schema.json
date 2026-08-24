@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devos.dev/schemas/v0/template.schema.json",
+  "title": "Template",
+  "description": "Canonical Template contract per DEVOS-SPEC-027 and authoring rules of DEVOS-SPEC-053. Templates are pure declarative data: no executable steps, no environment reads, no secret values, deterministic output for identical inputs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "version", "structure"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable Template identifier."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable Template name."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$",
+      "description": "Immutable template version per DEVOS-SPEC-059."
+    },
+    "structure": {
+      "type": "object",
+      "description": "Static declarative content containing placeholders substituted only from validated parameters."
+    },
+    "description": {
+      "type": "string",
+      "description": "What this Template creates."
+    },
+    "compatibility": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Supported manifest or schema versions range per DEVOS-SPEC-027."
+    },
+    "parameters": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/parameter" },
+      "description": "Declared parameters validated before any generation occurs."
+    },
+    "defaults": {
+      "type": "object",
+      "description": "Top-level default values for optional parameters; each default MUST satisfy its own constraints."
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Illustrative parameter sets for documentation purposes."
+      }
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    }
+  },
+  "$defs": {
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "required", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable identifier referenced by placeholders in the structure."
+        },
+        "type": {
+          "enum": ["string", "number", "boolean", "enum"],
+          "description": "Exactly one type per parameter per DEVOS-SPEC-027."
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Required parameters MUST NOT rely on defaults to become satisfiable."
+        },
+        "description": {
+          "type": "string",
+          "description": "Shown to callers before they supply values."
+        },
+        "default": {
+          "description": "Optional only; MUST satisfy its own constraints before the Template is valid."
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pattern": { "type": "string" },
+            "minLength": { "type": "integer", "minimum": 0 },
+            "maxLength": { "type": "integer", "minimum": 0 },
+            "minimum": { "type": "number" },
+            "maximum": { "type": "number" },
+            "values": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "description": "Exhaustive allowed values for enum parameters."
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin"],
+      "properties": {
+        "origin": {
+          "type": "string",
+          "description": "Where this template came from; recorded at registration and preserved thereafter."
+        },
+        "contributingPlugin": {
+          "type": "string",
+          "description": "Plugin identifier when contributed per DEVOS-SPEC-035 contribution rules."
+        }
+      }
+    }
+  },
+  "$comment": "Placeholders referencing undeclared parameters are invalid; validation of declaration integrity belongs to domain stages per DEVOS-SPEC-035."
+}

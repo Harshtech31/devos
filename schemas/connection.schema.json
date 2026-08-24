@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devos.dev/schemas/v0/connection.schema.json",
+  "title": "Connection",
+  "description": "Canonical Connection contract per DEVOS-SPEC-025. A Connection represents configured connectivity to one external system. Credentials MUST NEVER be stored inline; they are expressed as Secret references only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "targetType", "endpoint"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable Connection identifier."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable Connection name."
+    },
+    "targetType": {
+      "type": "string",
+      "description": "The kind of external system being reached."
+    },
+    "endpoint": {
+      "type": ["string", "object"],
+      "description": "Declarative address or locator for the external system. Objects use named descriptor fields; strings use direct locators.",
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    },
+    "credentialSecretRefs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true,
+      "description": "Identifiers of Secrets owned by the same Workspace. Inline credential values are invalid per DEVOS-SPEC-025 and DEVOS-SPEC-028."
+    },
+    "options": {
+      "type": "object",
+      "description": "Connection options consumed by the Connection Engine.",
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    },
+    "healthCheckHints": {
+      "type": "object",
+      "description": "Hints consumed by the Health System defined in DEVOS-SPEC-046.",
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    }
+  }
+}

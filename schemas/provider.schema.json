@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devos.dev/schemas/v0/provider.schema.json",
+  "title": "Provider",
+  "description": "Canonical Provider contract per DEVOS-SPEC-024. A Provider is a replaceable implementation of one capability category. Consumers address capabilities, never vendors. Credentials are Secret references only; inline values are invalid.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "capability", "configuration"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable Provider identifier."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable Provider name."
+    },
+    "capability": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The open capability category this Provider implements, addressed per DEVOS-SPEC-039 for AI capability."
+    },
+    "configuration": {
+      "type": "object",
+      "description": "Declarative Provider configuration block. Credential material MUST appear here only as Secret references, never as inline values per DEVOS-SPEC-024.",
+      "additionalProperties": true
+    },
+    "operations": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true,
+      "description": "Declared supported operations within the category. Undeclared operations are rejected at invocation time."
+    },
+    "credentialSecretRef": {
+      "type": "string",
+      "description": "Identifier of a Secret owned by the same Workspace, resolved transiently by the Security Engine at use time."
+    },
+    "options": {
+      "type": "object",
+      "description": "Additional provider options and metadata.",
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    },
+    "healthHints": {
+      "type": "object",
+      "description": "Hints consumed during health evaluation of DEVOS-SPEC-046.",
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    }
+  }
+}

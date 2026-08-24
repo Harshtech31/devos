@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devos.dev/schemas/v0/environment.schema.json",
+  "title": "Environment",
+  "description": "Canonical Environment contract per DEVOS-SPEC-023. An Environment holds runtime configuration owned by exactly one Profile. Sensitive values MUST be Secret references, never literals; resolution happens only at usage time through authorized systems.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "variables": {
+      "type": "object",
+      "description": "Environment variables as name/value pairs. Values MAY be literals for non-sensitive data or Secret references for sensitive data.",
+      "additionalProperties": { "type": "string" }
+    },
+    "featureFlags": {
+      "type": "object",
+      "description": "Named boolean or string toggles.",
+      "additionalProperties": { "type": ["boolean", "string"] }
+    },
+    "runtimeConfig": {
+      "type": "object",
+      "description": "Key/value configuration entries consumed by tooling.",
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    }
+  },
+  "anyOf": [
+    { "required": ["variables"] },
+    { "required": ["featureFlags"] },
+    { "required": ["runtimeConfig"] }
+  ],
+  "$comment": "An Environment MUST NOT contain literal sensitive values; enforcement of reference-only sensitive values belongs to domain validation per DEVOS-SPEC-023 and custody rules of DEVOS-SPEC-028."
+}

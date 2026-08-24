@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devos.dev/schemas/v0/manifest.schema.json",
+  "title": "Workspace Manifest",
+  "description": "Canonical declarative form of a DevOS Workspace per DEVOS-SPEC-029. The manifest is complete, portable, version-controlled, and reviewable. It describes one Workspace and never executes. Secret values MUST NEVER appear in any field or encoding.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "project", "profiles"],
+  "properties": {
+    "apiVersion": {
+      "const": "devos.dev/v0",
+      "description": "Schema generation identifier."
+    },
+    "kind": {
+      "const": "Workspace",
+      "description": "Object kind; MUST be Workspace for a workspace manifest."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "schemaVersion"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable Workspace identifier."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable Workspace name."
+        },
+        "schemaVersion": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Manifest schema contract version following DEVOS-SPEC-059."
+        }
+      }
+    },
+    "project": {
+      "$ref": "project.schema.json",
+      "description": "The single Project owned by the Workspace per DEVOS-SPEC-021."
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "profile.schema.json" },
+      "description": "One or more Profiles, each embedding exactly one Environment per DEVOS-SPEC-022 and DEVOS-SPEC-029."
+    },
+    "connections": {
+      "type": "array",
+      "items": { "$ref": "connection.schema.json" },
+      "description": "Connections to external systems per DEVOS-SPEC-025; credentials as Secret references only."
+    },
+    "providers": {
+      "type": "array",
+      "items": { "$ref": "provider.schema.json" },
+      "description": "Replaceable capability providers per DEVOS-SPEC-024; credentials as Secret references only."
+    },
+    "plugins": {
+      "type": "array",
+      "items": { "$ref": "plugin.schema.json" },
+      "description": "Declared Plugins per DEVOS-SPEC-026."
+    },
+    "templates": {
+      "type": "array",
+      "items": { "$ref": "template.schema.json" },
+      "description": "Owned Templates per DEVOS-SPEC-027."
+    },
+    "secrets": {
+      "type": "array",
+      "items": { "$ref": "secret.schema.json" },
+      "description": "Secret references and metadata ONLY per DEVOS-SPEC-028; raw values are schema-invalid by construction."
+    },
+    "workflows": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/workflow" },
+      "description": "Executable automations containing one or more Tasks each."
+    },
+    "documentation": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/documentationEntry" },
+      "description": "First-class documentation resources managed by the Workspace."
+    }
+  },
+  "$defs": {
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "tasks"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "tasks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/task" }
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" }
+      }
+    },
+    "documentationEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "$comment": "Ownership encoded in manifest instances MUST match DEVOS-SPEC-015: every element maps to a domain object of DEVOS-SPEC-011, no child has multiple owners, and references resolve within the manifest or are explicitly marked external."
+}

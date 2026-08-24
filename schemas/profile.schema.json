@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devos.dev/schemas/v0/profile.schema.json",
+  "title": "Profile",
+  "description": "Canonical Profile contract per DEVOS-SPEC-022. A Profile is a named variant of a Workspace and owns exactly one embedded Environment per DEVOS-SPEC-029.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "environment"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable Profile identifier."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable Profile name."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short explanation of the context."
+    },
+    "isDefault": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marks this Profile as the fallback. At most one Profile per Workspace MAY declare it."
+    },
+    "displayOrder": {
+      "type": "integer",
+      "description": "Ordering hint for user interfaces."
+    },
+    "environment": {
+      "$ref": "environment.schema.json",
+      "description": "The single Environment owned by this Profile."
+    }
+  }
+}
